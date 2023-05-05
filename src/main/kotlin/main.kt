@@ -1,6 +1,6 @@
 fun main() {
     val typeCard: String = "Visa"
-    var resultPay: Double = sendMoney(typeCard, 50000000.0, 1000.0)
+    var resultPay: Double = sendMoney("MasterCard", 100_000.0, 1000.0)
 
     when (resultPay) {
         -1.0 -> println("Превышен лимит переводов")
@@ -9,7 +9,7 @@ fun main() {
     }
 }
 
-fun sendMoney(typeCard: String, previousMoneyOrder: Double = 0.0, currentMoneyOrder: Double): Double {
+fun sendMoney(typeCard: String = "VKPay", previousMoneyOrder: Double = 0.0, currentMoneyOrder: Double): Double {
     val maxLimitInDay = 150_000
     val maxLimitInMonth = 600_000
 
@@ -20,7 +20,11 @@ fun sendMoney(typeCard: String, previousMoneyOrder: Double = 0.0, currentMoneyOr
 
     when (typeCard) {
         "MasterCard", "Maestro" -> {
-            moneyForPay = ((currentMoneyOrder * 0.006) + 20) + currentMoneyOrder
+            moneyForPay = if ((currentMoneyOrder + previousMoneyOrder) > 75_000) {
+                ((currentMoneyOrder * 0.006) + 20) + currentMoneyOrder
+            } else {
+                currentMoneyOrder
+            }
 
             if (moneyForPay > maxLimitInDay || (moneyForPay + previousMoneyOrder) > maxLimitInMonth) {
                 return -1.0
